@@ -114,7 +114,7 @@ function UpdateBoard(){
     }
 }
 
-function NewGame(_totalNums = 10){
+function NewGame(_totalNums = 2){
     alert("New Game");
 
     //generate a new board
@@ -132,14 +132,14 @@ function NewGame(_totalNums = 10){
                 numsLeft -= 1;
             }
         }
-        // var copyBoard = board;
-        // if(Solve(0,0)){
-        //     board = copyBoard;
-        //     UpdateBoard();
-        // }
-        // else{
-        //     reTry = true;
-        // }
+        var copyBoard = board;
+        if(Solve(0,0)){
+            board = copyBoard;
+            UpdateBoard();
+        }
+        else{
+            reTry = true;
+        }
 
 
     }
@@ -164,8 +164,71 @@ function Clear(doCheck = true){
     UpdateBoard();
 }
 
-function Solve(){
-    alert("Solve");
+// the following code is for the sudoku solver in SWIFT
+// func Solve(_ row : Int, _ col : Int) -> Bool
+//     {
+//         itCount += 1;
+
+//         var row : Int = row;
+//         var col : Int = col;
+
+//         if (row == dim - 1 && col == dim) 
+//         {
+//             return true;
+//         }
+    
+//         if (col == dim)
+//         {
+//             row += 1;
+//             col = 0;
+//         }
+
+//         if (grid[row][col] != 0) 
+//         {
+//             return Solve(row, col + 1);
+//         }
+    
+//         for num in 1...dim
+//         {
+//             if (CheckPos(row, col, num))
+//             {
+//                 grid[row][col] = num;
+
+//                 if (self.Solve(row, col + 1)) 
+//                 {
+//                     return true;
+//                 }
+//             }
+//             grid[row][col] = 0;
+//         }
+//         return false;
+//     }
+
+var itCount = 0;
+var dim = 9;
+function Solve(x = 0, y = 0){
+    itCount += 1;
+
+    if(x == dim && y == dim){
+        return true;
+    }
+
+    if(board[y][x] != 0){
+        return Solve(x + 1, y);
+    }
+
+    for(var num = 1; num <= dim; num++){
+        if(CheckPos(x, y, num)){
+            board[y][x] = num;
+
+            if(Solve(x + 1, y)){
+                return true;
+            }
+        }
+        board[y][x] = 0;
+    }
+
+    return false;
 }
 
 function Clamp(num, min, max){
