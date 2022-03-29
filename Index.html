@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Sudoku</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Import Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <!-- Import Font Awesome -->
+    <script src="https://kit.fontawesome.com/673792e0ab.js" crossorigin="anonymous"></script>
+
+    <!-- Import Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Import Custom Script -->
+    <script src="js/script.js"></script>
+</head>
+
+<body onload="LoadBoard()">
+
+    <div class="jumbotron text-center">
+        <h1>Sudoku </h1>
+        <p>GD3S02 - WebDev1 <i class="fa-solid fa-chess-board"></i></p>
+    </div>
+
+    <!-- Centered Div for Sudoku Board -->
+    <div class="container-fluid">
+        <table class="gameGrid">
+            <colgroup class="vertSep"><col span="3"></colgroup>
+            <colgroup class="vertSep"><col span="3"></colgroup>
+            <colgroup class="vertSep"><col span="3"></colgroup>
+
+            <tbody class="horizSep">
+                <tr class="gridBox">
+                    <td class="gridCell"><input class="gridCellInput" id="cell-00" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-10" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-20" onChange="CheckBoard(this)" type="text"></td>
+
+                    <td class="gridCell"><input class="gridCellInput" id="cell-30" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-40" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-50" onChange="CheckBoard(this)" type="text"></td>
+
+                    <td class="gridCell"><input class="gridCellInput" id="cell-60" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-70" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-80" onChange="CheckBoard(this)" type="text"></td>
+                </tr>
+
+                <tr class="gridBox">
+                    <td class="gridCell"><input class="gridCellInput" id="cell-01" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-11" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-21" onChange="CheckBoard(this)" type="text"></td>
+
+                    <td class="gridCell"><input class="gridCellInput" id="cell-31" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-41" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-51" onChange="CheckBoard(this)" type="text"></td>
+
+                    <td class="gridCell"><input class="gridCellInput" id="cell-61" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-71" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-81" onChange="CheckBoard(this)" type="text"></td>
+                </tr>
+
+                <tr class="gridBox">
+                    <td class="gridCell"><input class="gridCellInput" id="cell-02" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-12" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-22" onChange="CheckBoard(this)" type="text"></td>
+
+                    <td class="gridCell"><input class="gridCellInput" id="cell-32" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-42" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-52" onChange="CheckBoard(this)" type="text"></td>
+
+                    <td class="gridCell"><input class="gridCellInput" id="cell-62" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-72" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-82" onChange="CheckBoard(this)" type="text"></td>
+                </tr>
+            </tbody>
+
+            <tbody class="horizSep">
+                <tr class="gridBox">
+                    <td class="gridCell"><input class="gridCellInput" id="cell-03" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-13" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-23" onChange="CheckBoard(this)" type="text"></td>
+
+                    <td class="gridCell"><input class="gridCellInput" id="cell-33" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-43" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-53" onChange="CheckBoard(this)" type="text"></td>
+
+                    <td class="gridCell"><input class="gridCellInput" id="cell-63" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-73" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-83" onChange="CheckBoard(this)" type="text"></td>
+                </tr>
+
+                <tr class="gridBox">
+                    <td class="gridCell"><input class="gridCellInput" id="cell-04" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-14" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-24" onChange="CheckBoard(this)" type="text"></td>
+
+                    <td class="gridCell"><input class="gridCellInput" id="cell-34" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-44" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-54" onChange="CheckBoard(this)" type="text"></td>
+
+                    <td class="gridCell"><input class="gridCellInput" id="cell-64" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-74" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-84" onChange="CheckBoard(this)" type="text"></td>
+                </tr>
+
+                <tr class="gridBox">
+                    <td class="gridCell"><input class="gridCellInput" id="cell-05" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-15" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-25" onChange="CheckBoard(this)" type="text"></td>
+
+                    <td class="gridCell"><input class="gridCellInput" id="cell-35" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-45" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-55" onChange="CheckBoard(this)" type="text"></td>
+
+                    <td class="gridCell"><input class="gridCellInput" id="cell-65" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-75" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-85" onChange="CheckBoard(this)" type="text"></td>
+                </tr>
+            </tbody>
+
+            <tbody class="horizSep">
+                <tr class="gridBox">
+                    <td class="gridCell"><input class="gridCellInput" id="cell-06" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-16" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-26" onChange="CheckBoard(this)" type="text"></td>
+
+                    <td class="gridCell"><input class="gridCellInput" id="cell-36" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-46" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-56" onChange="CheckBoard(this)" type="text"></td>
+
+                    <td class="gridCell"><input class="gridCellInput" id="cell-66" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-76" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-86" onChange="CheckBoard(this)" type="text"></td>
+                </tr>
+
+                <tr class="gridBox">
+                    <td class="gridCell"><input class="gridCellInput" id="cell-07" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-17" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-27" onChange="CheckBoard(this)" type="text"></td>
+
+                    <td class="gridCell"><input class="gridCellInput" id="cell-37" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-47" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-57" onChange="CheckBoard(this)" type="text"></td>
+
+                    <td class="gridCell"><input class="gridCellInput" id="cell-67" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-77" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-87" onChange="CheckBoard(this)" type="text"></td>
+                </tr>
+
+                <tr class="gridBox">
+                    <td class="gridCell"><input class="gridCellInput" id="cell-08" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-18" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-28" onChange="CheckBoard(this)" type="text"></td>
+
+                    <td class="gridCell"><input class="gridCellInput" id="cell-38" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-48" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-58" onChange="CheckBoard(this)" type="text"></td>
+
+                    <td class="gridCell"><input class="gridCellInput" id="cell-68" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-78" onChange="CheckBoard(this)" type="text"></td>
+                    <td class="gridCell"><input class="gridCellInput" id="cell-88" onChange="CheckBoard(this)" type="text"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="container-fluid" id="gameButtons">
+        <div class="btn-group">
+            <button id="btnNewGame" class="btn btn-primary btn-md center-block" OnClick="NewGame()" >New Game <i class="fa-solid fa-plus"></i></button>
+            <button id="btnClear" class="btn btn-danger btn-md center-block" OnClick="Clear()" >Clear <i class="fa-solid fa-ban"></i></button>
+            <button id="btnSolve" class="btn btn-success btn-md center-block" OnClick="Solve()" >Solve <i class="fa-solid fa-check"></i></button>
+        </div>
+    </div>
+
+    <!-- footer -->
+    <footer class="text-center fixed-bottom footer">
+        <p3 class="text-center">
+          Created by
+          <a href="https://github.com/KeaneCarotenuto"><i class="fa-brands fa-github"></i> Keane Carotenuto</i></a>
+        <p3>
+      </footer>
+
+</body>
+
+</html>
