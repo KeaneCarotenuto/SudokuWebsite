@@ -1,3 +1,6 @@
+//sudoku board is 9 rows and 9 columns of cells, each cell can have a value from 0-9 (0 is empty)
+//the board is divided into 3x3 boxes of cells
+
 const dim = 9;
 //2d array for the sudoku board
 var board = [
@@ -14,6 +17,17 @@ var board = [
     [0,0,0, 0,0,0, 0,0,0]
 ];
 var lockedCells = [];
+
+//difficulty enum
+var EDifficulty = {
+    SuperEasy: -1,
+    Easy: 0,
+    Medium: 1,
+    Hard: 2
+};
+
+//current difficulty
+var difficulty = EDifficulty.Easy;
 
 var timer = null;
 var totalTime = 0;
@@ -63,6 +77,7 @@ function LoadGame(){
 }
 
 function RestartTimer(){
+    PauseTimer();
     totalTime = 0;
     PlayTimer();
 }
@@ -76,8 +91,16 @@ function PlayTimer(){
     }, 1000);
 }
 
+function TryContinueTimer(){
+    //only play timer if timer is not already running
+    if(timer == null){
+        PlayTimer();
+    }
+}
+
 function PauseTimer(){
     clearInterval(timer);
+    timer = null;
 
     UpdateTimer();
     SaveGame();
@@ -162,10 +185,27 @@ function UpdateTimer() {
     if (seconds < 10)
         seconds = "0" + seconds;
     var time = minutes + ":" + seconds;
-    document.getElementById("gameTimer").innerHTML = time;
+
+    var isSolved = CheckSolved();
+    if (isSolved) {
+        document.getElementById("gameTimer").innerHTML = "Solved In: " + time;
+    }
+    else{
+        document.getElementById("gameTimer").innerHTML = time;
+    }
+    
 }
 
 function UpdateBoard(){
+    var isSolved = CheckSolved();
+    if(isSolved){
+        PauseTimer();
+        //document.getElementById("gameStatus").innerHTML = "Solved!";
+    }
+    else{
+        TryContinueTimer();
+    }
+
     for(var y = 0; y < 9; y++){
         for(var x = 0; x < 9; x++){
             var cell = document.getElementById("cell-" + x + y);
@@ -174,7 +214,16 @@ function UpdateBoard(){
             //disable input if locked
             cell.disabled = lockedCells.includes(String(x)+String(y));
 
+            if (isSolved && !cell.disabled){
+                cell.value = boardVal;
+                cell.classList.remove("cellWrong");
+                cell.classList.add("cellCorrect");
+                cell.disabled = true;
+                continue;
+            }
+
             cell.classList.remove("cellWrong");
+            cell.classList.remove("cellCorrect");
 
             if (boardVal == 0){
                 cell.value = "";
@@ -189,7 +238,28 @@ function UpdateBoard(){
     }
 }
 
-function NewGame(_totalNums = 10){
+function SetDifficulty(diff = 0){
+    switch(diff){
+        case EDifficulty.SuperEasy:
+            difficulty = EDifficulty.SuperEasy;
+            break;
+        case EDifficulty.Easy:
+            difficulty = EDifficulty.Easy;
+            break;
+        case EDifficulty.Medium:
+            difficulty = EDifficulty.Medium;
+            break;
+        case EDifficulty.Hard:
+            difficulty = EDifficulty.Hard;
+            break;
+        default:
+            difficulty = EDifficulty.Easy;
+            break;
+    }
+    NewGame();
+}
+
+function NewGame(_seedAmount = 5){
     //find new game button and blur it
     var newGameButton = document.getElementById("btnNewGame");
     if (newGameButton != null) newGameButton.blur();
@@ -201,21 +271,22 @@ function NewGame(_totalNums = 10){
     while(reTry){
         reTry = false;
         Reset();
-        var numsLeft = _totalNums;
+        var numsLeft = _seedAmount;
         while(numsLeft > 0){
             var randX = Math.floor(Math.random() * 9);
             var randY = Math.floor(Math.random() * 9);
             var randNum = Math.floor(Math.random() * 9) + 1;
-            var coord = String(randX) + String(randY);
             if(board[randY][randX] == 0 && CheckPos(randX, randY, randNum)){
-                lockedCells.push(coord);
                 board[randY][randX] = randNum;
                 numsLeft -= 1;
             }
         }
-        var copyBoard = JSON.parse(JSON.stringify(board));
+        //var copyBoard = JSON.parse(JSON.stringify(board));
         if(Solve(0,0)){
-            board = copyBoard;
+            //board = copyBoard;
+            var trimAmount = GetTrimAmount();
+            TrimBoard(trimAmount, -1);
+            LockFilledCells();
             UpdateUI();
         }
         else{
@@ -229,25 +300,91 @@ function NewGame(_totalNums = 10){
     UpdateUI();
 }
 
+function GetTrimAmount() {
+    switch (difficulty) {
+        case EDifficulty.SuperEasy:
+            return 3;
+            break;
+
+        case EDifficulty.Easy:
+            return 5;
+            break;
+
+        case EDifficulty.Medium:
+            return 6;
+            break;
+
+        case EDifficulty.Hard:
+            return 7;
+            break;
+    
+        default:
+            return 5;
+            break;
+    }
+}
+
+function TrimBoard(toTrim = 4, range = 0){
+    //for each box in the board (3x3) set random cells to 0, until lockedPerBox cells have numbers
+    for(var y = 0; y < 9; y += 3){
+        for(var x = 0; x < 9; x += 3){
+            var numsLeft = toTrim + Math.round(Math.random() * range);
+            while(numsLeft > 0){
+                var randX = Math.floor(Math.random() * 3);
+                var randY = Math.floor(Math.random() * 3);
+                if(board[y + randY][x + randX] != 0){
+                    board[y + randY][x + randX] = 0;
+                    numsLeft -= 1;
+                }
+            }
+        }
+    }
+}
+
 function Reset(){
-    timer = 0;
-    lockedCells = [];
+    RestartTimer();
     for(var y = 0; y < 9; y++){
         for(var x = 0; x < 9; x++){
             board[y][x] = 0;
         }
     }
+    UnlockAllCells();
+    SaveGame();
+    UpdateUI();
+}
+
+function LockAllCells(){
+    for(var y = 0; y < 9; y++){
+        for(var x = 0; x < 9; x++){
+            lockedCells.push(String(x)+String(y));
+        }
+    }
+    SaveGame();
+    UpdateUI();
+}
+
+function LockFilledCells(){
+    for(var y = 0; y < 9; y++){
+        for(var x = 0; x < 9; x++){
+            if(board[y][x] != 0){
+                lockedCells.push(String(x)+String(y));
+            }
+        }
+    }
+    SaveGame();
+    UpdateUI();
+}
+
+function UnlockAllCells(){
+    lockedCells = [];
+    SaveGame();
+    UpdateUI();
 }
 
 function Clear(doCheck = true){
     //find clear button and blur it
     var clearButton = document.getElementById("btnClear");
     if (clearButton != null) clearButton.blur();
-
-    if (doCheck){
-        var r = confirm("Are you sure you want to clear the board?");
-        if(r == false) return;
-    }
 
     for(var y = 0; y < 9; y++){
         for(var x = 0; x < 9; x++){
@@ -278,7 +415,22 @@ function Solve(x = 0, y = 0){
         return Solve(x + 1, y);
     }
 
-    for(var num = 1; num <= 9; num++){
+    // for(var num = 1; num <= 9; num++){
+    //     if(CheckPos(x, y, num)){
+    //         board[y][x] = num;
+
+    //         if(Solve(x + 1, y)){
+    //             return true;
+    //         }
+    //     }
+    //     board[y][x] = 0;
+    // }
+
+    var numsToCheck = [1,2,3,4,5,6,7,8,9];
+    //randomly choose a number to check, and remove it from the list
+    while (numsToCheck.length > 0){
+        var randNum = Math.floor(Math.random() * numsToCheck.length);
+        var num = numsToCheck[randNum];
         if(CheckPos(x, y, num)){
             board[y][x] = num;
 
@@ -287,9 +439,21 @@ function Solve(x = 0, y = 0){
             }
         }
         board[y][x] = 0;
+        numsToCheck.splice(randNum, 1);
     }
 
     return false;
+}
+
+function CheckSolved(){
+    for(var y = 0; y < 9; y++){
+        for(var x = 0; x < 9; x++){
+            if(board[y][x] == 0) return false;
+
+            if (!CheckPos(x, y, board[y][x])) return false;
+        }
+    }
+    return true;
 }
 
 function Clamp(num, min, max){

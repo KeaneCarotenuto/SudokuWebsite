@@ -1,6 +1,6 @@
 .jumbotron {
-    padding-top: 1vw;
-    padding-bottom: 1vw;
+    padding-top: 0.5vw;
+    padding-bottom: 0.5vw;
     margin-bottom: 0;
 }
 
@@ -9,25 +9,44 @@
     margin-bottom: 0.5vw;
 }
 
+#gameTimer {
+    font-size: max(15px, 1.5vw);
+    padding: 0px;
+    margin: 10px;
+}
+
 .gameGrid{
+    padding: 0px;
+    margin: 0px;
     margin-left: auto;
     margin-right: auto;
+    background-color: #CCCCCC;
 }
 
 .vertSep {
+    padding: 0px;
+    margin: 0px;
     border: solid medium;
 }
 
 .horizSep {
+    padding: 0px;
+    margin: 0px;
     border: solid medium;
 }
 
-.gridCellInput {
-    color: #000000;
+col {
     padding: 0px;
     margin: 0px;
-    border: solid thin;
-    border-color: #CCCCCC;
+    border: none;
+}
+
+
+.gridCellInput {
+    color: #000000;
+    padding: none;
+    margin: none;
+    border: none;
     text-align: center;
     width: 3vw;
     height: 3vw;
@@ -37,28 +56,34 @@
     box-sizing: border-box;
     background-color: #EEEEEE;
 }
-
-.cellWrong {
-    background-color: #FFAAAA;
-}
-
 .gridCellInput:disabled {
     background-color: #DDDDDD;
 }
 
+.cellWrong {
+    background-color: #FFAAAA;
+}
 .cellWrong:disabled {
     color: #FF0000;
 }
 
+.cellCorrect {
+    background-color: #AAFFAA;
+}
+.cellCorrect:disabled {
+    background-color: #AAFFAA;
+}
 
-#gameButtons {
+
+
+#gameButtons, #difficultyButtons {
     text-align: center;
     margin-top: 1vw;
     margin-bottom: 1vw;
     width: 100%;
 }
 
-#btnNewGame, #btnSolve, #btnClear {
+#btnNewGame, #btnSolve, #btnClear, #btnSuperEasy, #btnEasy, #btnMedium, #btnHard {
     display: inline-block;
     padding: 0px;
     width: 10vw;
@@ -75,4 +100,10 @@
 
 .footer{
     margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.btn-outline-warning{
+    border-color: #FFA500;
+    color: #FFA500;
 }
