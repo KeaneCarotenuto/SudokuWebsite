@@ -52,17 +52,7 @@ document.onkeypress = function(evt) {
 
 function ToggleNoteMode(){
     isNoteMode = !isNoteMode;
-    var noteModeButton = document.getElementById("noteMode");
-    if(isNoteMode){
-        noteModeButton.innerHTML = "Note Mode";
-        noteModeButton.classList.add("btn-outline-warning");
-        noteModeButton.classList.remove("btn-outline-primary");
-    }
-    else{
-        noteModeButton.innerHTML = "Place Mode";
-        noteModeButton.classList.add("btn-outline-primary");
-        noteModeButton.classList.remove("btn-outline-warning");
-    }
+    UpdateUI();
 }
 
 function SaveGame(){
@@ -154,8 +144,10 @@ function PauseTimer(){
 }
 
 function CheckBoard(input){
-    //deslect input field
-    input.blur();
+    //deslect input field ONLY if already selected
+    if(input.classList.contains("selected")){
+        input.classList.remove("selected");
+    }
 
     //id format cell-xy
     var id = input.id;
@@ -235,6 +227,7 @@ function CheckPos(x, y, num){
 function UpdateUI(){
     UpdateBoard();
     UpdateTimer();
+    UpdateNoteMode();
 }
 
 function UpdateTimer() {
@@ -311,6 +304,20 @@ function UpdateBoard(){
                 }
             }
         }
+    }
+}
+
+function UpdateNoteMode(){
+    var noteModeButton = document.getElementById("noteMode");
+    if(isNoteMode){
+        noteModeButton.innerHTML = "Note Mode";
+        noteModeButton.classList.add("btn-outline-warning");
+        noteModeButton.classList.remove("btn-outline-primary");
+    }
+    else{
+        noteModeButton.innerHTML = "Place Mode";
+        noteModeButton.classList.add("btn-outline-primary");
+        noteModeButton.classList.remove("btn-outline-warning");
     }
 }
 
