@@ -295,6 +295,9 @@ function UpdateBoard(){
                         cell.value += notes[i];
                         if (i < notes.length - 1) cell.value += ",";
                     }
+                    var length = Math.max(1, notes.length * 0.6);
+                    var fontSize = "max(calc(20px / "+ String(length) +"), calc(2vw / " + String(length) + "))";
+                    cell.style.fontSize = fontSize;
                 }
             }
             else{
