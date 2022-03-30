@@ -1,3 +1,4 @@
+const dim = 9;
 //2d array for the sudoku board
 var board = [
     [0,0,0, 0,0,0, 0,0,0],
@@ -12,19 +13,74 @@ var board = [
     [0,0,0, 0,0,0, 0,0,0],
     [0,0,0, 0,0,0, 0,0,0]
 ];
+var lockedCells = [];
 
-function SaveBoard(){
+var timer = null;
+var totalTime = 0;
+
+function SaveGame(){
     localStorage.setItem("sudokuBoard", JSON.stringify(board));
+    localStorage.setItem("sudokuLockedCells", JSON.stringify(lockedCells));
+    localStorage.setItem("sudokuTime", totalTime);
 }
 
-function LoadBoard(){
+function LoadGame(){
     //load board from local storage
     var savedBoard = localStorage.getItem("sudokuBoard");
     if(savedBoard != null){
         board = JSON.parse(savedBoard);
     }
+    //if board contains only 0's, new game
+    var isNewGame = true;
+    loop:
+    for(var y = 0; y < 9; y++){
+        for(var x = 0; x < 9; x++){
+            if(board[y][x] != 0){
+                isNewGame = false;
+                break loop;
+            }
+        }
+    }
+    if(isNewGame){
+        NewGame();
+    }
 
-    UpdateBoard();
+    //load locked cells from local storage
+    var savedLockedCells = localStorage.getItem("sudokuLockedCells");
+    if(savedLockedCells != null){
+        lockedCells = JSON.parse(savedLockedCells);
+    }
+
+
+    //load time from local storage
+    var savedTime = localStorage.getItem("sudokuTime");
+    if(savedTime != null){
+        totalTime = parseInt(savedTime);
+    }
+
+    PlayTimer();
+    UpdateUI();
+}
+
+function RestartTimer(){
+    totalTime = 0;
+    PlayTimer();
+}
+
+function PlayTimer(){
+    timer = setInterval(function(){
+        totalTime += 1;
+
+        UpdateTimer();
+        SaveGame();
+    }, 1000);
+}
+
+function PauseTimer(){
+    clearInterval(timer);
+
+    UpdateTimer();
+    SaveGame();
 }
 
 function CheckBoard(input){
@@ -52,9 +108,9 @@ function CheckBoard(input){
 
     board[y][x] = num;
 
-    SaveBoard();
+    SaveGame();
 
-    UpdateBoard();
+    UpdateUI();
 }
 
 function CheckPos(x, y, num){
@@ -93,11 +149,30 @@ function CheckPos(x, y, num){
     return true;
 }
 
+function UpdateUI(){
+    UpdateBoard();
+    UpdateTimer();
+}
+
+function UpdateTimer() {
+    var minutes = Math.floor(totalTime / 60);
+    if (minutes < 10)
+        minutes = "0" + minutes;
+    var seconds = totalTime % 60;
+    if (seconds < 10)
+        seconds = "0" + seconds;
+    var time = minutes + ":" + seconds;
+    document.getElementById("gameTimer").innerHTML = time;
+}
+
 function UpdateBoard(){
     for(var y = 0; y < 9; y++){
         for(var x = 0; x < 9; x++){
             var cell = document.getElementById("cell-" + x + y);
             var boardVal = board[y][x];
+
+            //disable input if locked
+            cell.disabled = lockedCells.includes(String(x)+String(y));
 
             cell.classList.remove("cellWrong");
 
@@ -114,40 +189,61 @@ function UpdateBoard(){
     }
 }
 
-function NewGame(_totalNums = 2){
-    alert("New Game");
+function NewGame(_totalNums = 10){
+    //find new game button and blur it
+    var newGameButton = document.getElementById("btnNewGame");
+    if (newGameButton != null) newGameButton.blur();
+
+    totalTime = 0;
 
     //generate a new board
     var reTry = true;
     while(reTry){
         reTry = false;
-        Clear(false);
-        var numsLeft = 10;
+        Reset();
+        var numsLeft = _totalNums;
         while(numsLeft > 0){
             var randX = Math.floor(Math.random() * 9);
             var randY = Math.floor(Math.random() * 9);
             var randNum = Math.floor(Math.random() * 9) + 1;
+            var coord = String(randX) + String(randY);
             if(board[randY][randX] == 0 && CheckPos(randX, randY, randNum)){
+                lockedCells.push(coord);
                 board[randY][randX] = randNum;
                 numsLeft -= 1;
             }
         }
-        var copyBoard = board;
+        var copyBoard = JSON.parse(JSON.stringify(board));
         if(Solve(0,0)){
             board = copyBoard;
-            UpdateBoard();
+            UpdateUI();
         }
         else{
+            console.log("Trying To Make Board...");
             reTry = true;
         }
-
-
     }
 
-    UpdateBoard();
+    SaveGame();
+    RestartTimer();
+    UpdateUI();
+}
+
+function Reset(){
+    timer = 0;
+    lockedCells = [];
+    for(var y = 0; y < 9; y++){
+        for(var x = 0; x < 9; x++){
+            board[y][x] = 0;
+        }
+    }
 }
 
 function Clear(doCheck = true){
+    //find clear button and blur it
+    var clearButton = document.getElementById("btnClear");
+    if (clearButton != null) clearButton.blur();
+
     if (doCheck){
         var r = confirm("Are you sure you want to clear the board?");
         if(r == false) return;
@@ -155,69 +251,34 @@ function Clear(doCheck = true){
 
     for(var y = 0; y < 9; y++){
         for(var x = 0; x < 9; x++){
-            board[y][x] = 0;
+            //if cell isnt locked, set to 0
+            if(!lockedCells.includes(String(x)+String(y))) board[y][x] = 0;
         }
     }
 
-    SaveBoard();
-
-    UpdateBoard();
+    SaveGame();
+    UpdateUI();
 }
 
-// the following code is for the sudoku solver in SWIFT
-// func Solve(_ row : Int, _ col : Int) -> Bool
-//     {
-//         itCount += 1;
-
-//         var row : Int = row;
-//         var col : Int = col;
-
-//         if (row == dim - 1 && col == dim) 
-//         {
-//             return true;
-//         }
-    
-//         if (col == dim)
-//         {
-//             row += 1;
-//             col = 0;
-//         }
-
-//         if (grid[row][col] != 0) 
-//         {
-//             return Solve(row, col + 1);
-//         }
-    
-//         for num in 1...dim
-//         {
-//             if (CheckPos(row, col, num))
-//             {
-//                 grid[row][col] = num;
-
-//                 if (self.Solve(row, col + 1)) 
-//                 {
-//                     return true;
-//                 }
-//             }
-//             grid[row][col] = 0;
-//         }
-//         return false;
-//     }
-
-var itCount = 0;
-var dim = 9;
 function Solve(x = 0, y = 0){
-    itCount += 1;
+    // find solve button and blur it
+    var solveButton = document.getElementById("btnSolve");
+    if (solveButton != null) solveButton.blur();
 
-    if(x == dim && y == dim){
+    if(x == dim && y == dim - 1){
         return true;
+    }
+
+    if (x == dim){
+        x = 0;
+        y += 1;
     }
 
     if(board[y][x] != 0){
         return Solve(x + 1, y);
     }
 
-    for(var num = 1; num <= dim; num++){
+    for(var num = 1; num <= 9; num++){
         if(CheckPos(x, y, num)){
             board[y][x] = num;
 

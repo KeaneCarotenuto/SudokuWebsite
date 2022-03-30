@@ -21,11 +21,16 @@
     <script src="js/script.js"></script>
 </head>
 
-<body onload="LoadBoard()">
+<body onload="LoadGame()">
 
     <div class="jumbotron text-center">
         <h1>Sudoku </h1>
         <p>GD3S02 - WebDev1 <i class="fa-solid fa-chess-board"></i></p>
+    </div>
+
+    <!-- A timer in the middle of the page -->
+    <div class="container-fluid text-center" id="timerContainer">
+        <h1 id="gameTimer">00:00</h1>
     </div>
 
     <!-- Centered Div for Sudoku Board -->
@@ -173,7 +178,7 @@
         <div class="btn-group">
             <button id="btnNewGame" class="btn btn-primary btn-md center-block" OnClick="NewGame()" >New Game <i class="fa-solid fa-plus"></i></button>
             <button id="btnClear" class="btn btn-danger btn-md center-block" OnClick="Clear()" >Clear <i class="fa-solid fa-ban"></i></button>
-            <button id="btnSolve" class="btn btn-success btn-md center-block" OnClick="Solve()" >Solve <i class="fa-solid fa-check"></i></button>
+            <button id="btnSolve" class="btn btn-success btn-md center-block" OnClick="{Solve();UpdateBoard()}" >Solve <i class="fa-solid fa-check"></i></button>
         </div>
     </div>
 

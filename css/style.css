@@ -1,6 +1,12 @@
 .jumbotron {
     padding-top: 1vw;
     padding-bottom: 1vw;
+    margin-bottom: 0;
+}
+
+#timerContainer {
+    margin-top: 0.5vw;
+    margin-bottom: 0.5vw;
 }
 
 .gameGrid{
@@ -25,14 +31,25 @@
     text-align: center;
     width: 3vw;
     height: 3vw;
+    min-width: 30px;
+    min-height: 30px;
+    font-size: max(20px, 2vw);
     box-sizing: border-box;
-    font-size: 2vw;
     background-color: #EEEEEE;
 }
 
 .cellWrong {
-    background-color: #FF0000;
+    background-color: #FFAAAA;
 }
+
+.gridCellInput:disabled {
+    background-color: #DDDDDD;
+}
+
+.cellWrong:disabled {
+    color: #FF0000;
+}
+
 
 #gameButtons {
     text-align: center;
@@ -43,9 +60,12 @@
 
 #btnNewGame, #btnSolve, #btnClear {
     display: inline-block;
+    padding: 0px;
     width: 10vw;
     height: 3vw;
-    font-size: 1.2vw;
+    min-width: 100px;
+    min-height: 30px;
+    font-size: max(12px, 1.2vw);
 }
 
 .btn-group {
