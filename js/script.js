@@ -52,11 +52,16 @@ document.onkeypress = function(evt) {
 
 function ToggleNoteMode(){
     isNoteMode = !isNoteMode;
+    var noteModeButton = document.getElementById("noteMode");
     if(isNoteMode){
-        document.getElementById("noteMode").innerHTML = "Note Mode";
+        noteModeButton.innerHTML = "Note Mode";
+        noteModeButton.classList.add("btn-outline-warning");
+        noteModeButton.classList.remove("btn-outline-primary");
     }
     else{
-        document.getElementById("noteMode").innerHTML = "Place Mode";
+        noteModeButton.innerHTML = "Place Mode";
+        noteModeButton.classList.add("btn-outline-primary");
+        noteModeButton.classList.remove("btn-outline-warning");
     }
 }
 
