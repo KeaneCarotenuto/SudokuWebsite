@@ -2,6 +2,7 @@
     padding-top: 0.5vw;
     padding-bottom: 0.5vw;
     margin-bottom: 0;
+    background-color: #E5E5E5;
 }
 
 #timerContainer {
@@ -54,10 +55,10 @@ col {
     min-height: 30px;
     font-size: max(20px, 2vw);
     box-sizing: border-box;
-    background-color: #EEEEEE;
+    background-color: #FFFFFF;
 }
 .gridCellInput:disabled {
-    background-color: #DDDDDD;
+    background-color: #E5E5E5;
 }
 
 .cellWrong {
@@ -74,16 +75,21 @@ col {
     background-color: #AAFFAA;
 }
 
+.cellNote {
+    font-size: 100%;
+    background-color: #FFFFAA;
+}
 
 
-#gameButtons, #difficultyButtons {
+
+#gameButtons, #difficultyButtons, #noteButton {
     text-align: center;
     margin-top: 1vw;
     margin-bottom: 1vw;
     width: 100%;
 }
 
-#btnNewGame, #btnSolve, #btnClear, #btnSuperEasy, #btnEasy, #btnMedium, #btnHard {
+#btnNewGame, #btnSolve, #btnClear, #btnSuperEasy, #btnEasy, #btnMedium, #btnHard, #noteMode {
     display: inline-block;
     padding: 0px;
     width: 10vw;

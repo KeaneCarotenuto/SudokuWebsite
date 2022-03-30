@@ -1,5 +1,8 @@
 //sudoku board is 9 rows and 9 columns of cells, each cell can have a value from 0-9 (0 is empty)
 //the board is divided into 3x3 boxes of cells
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
 
 const dim = 9;
 //2d array for the sudoku board
@@ -16,6 +19,8 @@ var board = [
     [0,0,0, 0,0,0, 0,0,0],
     [0,0,0, 0,0,0, 0,0,0]
 ];
+var notesBoard = JSON.parse(JSON.stringify(board));
+
 var lockedCells = [];
 
 //difficulty enum
@@ -32,8 +37,33 @@ var difficulty = EDifficulty.Easy;
 var timer = null;
 var totalTime = 0;
 
+var isNoteMode = false;
+
+//if press N on keyboard, toggle note mode
+document.onkeypress = function(evt) {
+    evt = evt || window.event;
+    var charCode = evt.keyCode || evt.which;
+    var charStr = String.fromCharCode(charCode);
+    
+    if (charStr.toLowerCase() == "n") {
+        ToggleNoteMode();
+    }
+};
+
+function ToggleNoteMode(){
+    isNoteMode = !isNoteMode;
+    if(isNoteMode){
+        document.getElementById("noteMode").innerHTML = "Note Mode";
+    }
+    else{
+        document.getElementById("noteMode").innerHTML = "Place Mode";
+    }
+}
+
 function SaveGame(){
     localStorage.setItem("sudokuBoard", JSON.stringify(board));
+    localStorage.setItem("sudokuNotes", JSON.stringify(notesBoard));
+    localStorage.setItem("sudokuNotesMode", isNoteMode);
     localStorage.setItem("sudokuLockedCells", JSON.stringify(lockedCells));
     localStorage.setItem("sudokuTime", totalTime);
 }
@@ -57,6 +87,18 @@ function LoadGame(){
     }
     if(isNewGame){
         NewGame();
+    }
+
+    //load notes board from local storage
+    var savedNotesBoard = localStorage.getItem("sudokuNotes");
+    if(savedNotesBoard != null){
+        notesBoard = JSON.parse(savedNotesBoard);
+    }
+
+    //load note mode from local storage
+    var savedNoteMode = localStorage.getItem("sudokuNotesMode");
+    if(savedNoteMode != null){
+        isNoteMode = savedNoteMode;
     }
 
     //load locked cells from local storage
@@ -114,22 +156,35 @@ function CheckBoard(input){
     var id = input.id;
     var x = id.substring(5,6);
     var y = id.substring(6,7);
+
     //if x and y are not numbers, or out of bounds, return
-    if(isNaN(x) || isNaN(y) || x < 0 || x > 8 || y < 0 || y > 8){
+    if(x < 0 || x > 8 || y < 0 || y > 8){
         return;
     }
 
-    //get the value of the cell
-    var num = parseInt(input.value);
+    if (isNoteMode) {
+        var string = input.value;
+        //remove all non-numbers
+        string = string.replace(/[^0-9]/g, '');
 
-    //if num is invalid, set to 0
-    if(isNaN(num)){
-        num = 0;
+        //if note mode, set the note board to the value
+        notesBoard[y][x] = string;
     }
-    //clamp num to 0-9
-    num = Clamp(num, 0, 9);
+    else{
+        if (isNaN(x) || isNaN(y)) return;
 
-    board[y][x] = num;
+        //get the value of the cell
+        var num = parseInt(input.value);
+
+        //if num is invalid, set to 0
+        if(isNaN(num)){
+            num = 0;
+        }
+        //clamp num to 0-9
+        num = Clamp(num, 0, 9);
+
+        board[y][x] = num;
+    }
 
     SaveGame();
 
@@ -224,9 +279,25 @@ function UpdateBoard(){
 
             cell.classList.remove("cellWrong");
             cell.classList.remove("cellCorrect");
+            cell.classList.remove("cellNote");
 
             if (boardVal == 0){
-                cell.value = "";
+                //check notes board
+                var notes = String(notesBoard[y][x]);
+
+                //if no notes, set to 0
+                if(notes.length == 0){
+                    cell.value = "";
+                }
+                else{
+                    cell.value = "";
+                    for (var i = 0; i < notes.length; i++) {
+                        if (notes[i] == "0") continue;
+                        cell.classList.add("cellNote");
+                        cell.value += notes[i];
+                        if (i < notes.length - 1) cell.value += ",";
+                    }
+                }
             }
             else{
                 cell.value = boardVal;
@@ -346,6 +417,7 @@ function Reset(){
     for(var y = 0; y < 9; y++){
         for(var x = 0; x < 9; x++){
             board[y][x] = 0;
+            notesBoard[y][x] = 0;
         }
     }
     UnlockAllCells();
@@ -390,6 +462,8 @@ function Clear(doCheck = true){
         for(var x = 0; x < 9; x++){
             //if cell isnt locked, set to 0
             if(!lockedCells.includes(String(x)+String(y))) board[y][x] = 0;
+
+            notesBoard[y][x] = "";
         }
     }
 
