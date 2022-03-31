@@ -103,12 +103,12 @@ col {
     margin-right: auto;
 }
 
-.footer{
-    margin-top: 20px;
-    margin-bottom: 10px;
-}
-
 .btn-outline-warning{
     border-color: #FFA500;
     color: #FFA500;
+}
+
+.footer{
+    margin-top: 20px;
+    margin-bottom: 10px;
 }

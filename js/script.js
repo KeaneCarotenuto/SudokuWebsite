@@ -1,10 +1,8 @@
-//sudoku board is 9 rows and 9 columns of cells, each cell can have a value from 0-9 (0 is empty)
-//the board is divided into 3x3 boxes of cells
+// Enable Bootstrap tooltips
 $(function () {
     $('[data-toggle="tooltip"]').tooltip()
-  })
+})
 
-const dim = 9;
 //2d array for the sudoku board
 var board = [
     [0,0,0, 0,0,0, 0,0,0],
@@ -19,8 +17,10 @@ var board = [
     [0,0,0, 0,0,0, 0,0,0],
     [0,0,0, 0,0,0, 0,0,0]
 ];
+//2d array for notes on the board
 var notesBoard = JSON.parse(JSON.stringify(board));
 
+//list of cels that are disabled
 var lockedCells = [];
 
 //difficulty enum
@@ -37,6 +37,7 @@ var difficulty = EDifficulty.Easy;
 var timer = null;
 var totalTime = 0;
 
+//tracks if writing notes or placing numbers
 var isNoteMode = false;
 
 //if press N on keyboard, toggle note mode
@@ -52,9 +53,13 @@ document.onkeypress = function(evt) {
 
 function ToggleNoteMode(){
     isNoteMode = !isNoteMode;
+    SaveGame();
     UpdateUI();
 }
 
+/**
+ * Saves the game vars to local storage
+ */
 function SaveGame(){
     localStorage.setItem("sudokuBoard", JSON.stringify(board));
     localStorage.setItem("sudokuNotes", JSON.stringify(notesBoard));
@@ -63,6 +68,9 @@ function SaveGame(){
     localStorage.setItem("sudokuTime", totalTime);
 }
 
+/**
+ * Tries to load a game from local storage
+ */
 function LoadGame(){
     //load board from local storage
     var savedBoard = localStorage.getItem("sudokuBoard");
@@ -80,6 +88,7 @@ function LoadGame(){
             }
         }
     }
+    //if no board, make new game
     if(isNewGame){
         NewGame();
     }
@@ -93,7 +102,7 @@ function LoadGame(){
     //load note mode from local storage
     var savedNoteMode = localStorage.getItem("sudokuNotesMode");
     if(savedNoteMode != null){
-        isNoteMode = savedNoteMode;
+        isNoteMode = (savedNoteMode === "true");
     }
 
     //load locked cells from local storage
@@ -108,16 +117,22 @@ function LoadGame(){
     if(savedTime != null){
         totalTime = parseInt(savedTime);
     }
-    
+
     UpdateUI();
 }
 
+/**
+ * Deletes old timer, and starts a new one from 0
+ */
 function RestartTimer(){
     PauseTimer();
     totalTime = 0;
     PlayTimer();
 }
 
+/**
+ * Creates a new timer and starts it (USE WITH CAUTION, CAN DUPE TIMER)
+ */
 function PlayTimer(){
     timer = setInterval(function(){
         totalTime += 1;
@@ -127,6 +142,9 @@ function PlayTimer(){
     }, 1000);
 }
 
+/**
+ * If timer doesnt exist, create it, keeps time
+ */
 function TryContinueTimer(){
     //only play timer if timer is not already running
     if(timer == null){
@@ -134,6 +152,9 @@ function TryContinueTimer(){
     }
 }
 
+/**
+ * Deletes timer but keeps time
+ */
 function PauseTimer(){
     clearInterval(timer);
     timer = null;
@@ -142,6 +163,11 @@ function PauseTimer(){
     SaveGame();
 }
 
+/**
+ * Checks the board using input elements and tries to change the board
+ * @param {*} input pass in the input element trying to be changed
+ * @returns nothing, simply updates the board
+ */
 function CheckBoard(input){
     //deslect input field ONLY if already selected
     if(input.classList.contains("selected")){
@@ -184,10 +210,16 @@ function CheckBoard(input){
     }
 
     SaveGame();
-
     UpdateUI();
 }
 
+/**
+ * Checks any position to see if it can legally place a number there
+ * @param {*} x x coordinate of cell
+ * @param {*} y y coordinate of cell
+ * @param {*} num value to try to set
+ * @returns true if the value can be set, false if not
+ */
 function CheckPos(x, y, num){
     if (num == 0){
         return true;
@@ -224,12 +256,18 @@ function CheckPos(x, y, num){
     return true;
 }
 
+/**
+ * Simple function to update all UI
+ */
 function UpdateUI(){
     UpdateBoard();
     UpdateTimer();
     UpdateNoteMode();
 }
 
+/**
+ * Updates the timer UI
+ */
 function UpdateTimer() {
     var minutes = Math.floor(totalTime / 60);
     if (minutes < 10)
@@ -249,24 +287,29 @@ function UpdateTimer() {
     
 }
 
+/**
+ * Updates the board UI
+ */
 function UpdateBoard(){
     var isSolved = CheckSolved();
     if(isSolved){
         PauseTimer();
-        //document.getElementById("gameStatus").innerHTML = "Solved!";
     }
     else{
         TryContinueTimer();
     }
 
+    //check if every cell is valid
     for(var y = 0; y < 9; y++){
         for(var x = 0; x < 9; x++){
+            //get cell and value
             var cell = document.getElementById("cell-" + x + y);
             var boardVal = board[y][x];
 
             //disable input if locked
             cell.disabled = lockedCells.includes(String(x)+String(y));
 
+            //if solved, disable input and make it green
             if (isSolved && !cell.disabled){
                 cell.value = boardVal;
                 cell.classList.remove("cellWrong");
@@ -275,6 +318,7 @@ function UpdateBoard(){
                 continue;
             }
 
+            //removing classes by default
             cell.classList.remove("cellWrong");
             cell.classList.remove("cellCorrect");
             cell.classList.remove("cellNote");
@@ -288,19 +332,23 @@ function UpdateBoard(){
                     cell.value = "";
                 }
                 else{
+                    //if notes do exist, write them
                     cell.value = "";
+                    //for each note, write it out
                     for (var i = 0; i < notes.length; i++) {
                         if (notes[i] == "0") continue;
                         cell.classList.add("cellNote");
                         cell.value += notes[i];
                         if (i < notes.length - 1) cell.value += ",";
                     }
+                    //calc the font size to use based on the number of notes
                     var length = Math.max(1, notes.length * 0.6);
                     var fontSize = "max(calc(20px / "+ String(length) +"), calc(2vw / " + String(length) + "))";
                     cell.style.fontSize = fontSize;
                 }
             }
             else{
+                //if not 0, set to value
                 cell.value = boardVal;
                 if (!CheckPos(x, y, boardVal)){
                     cell.classList.add("cellWrong");
@@ -312,6 +360,9 @@ function UpdateBoard(){
     }
 }
 
+/**
+ * Updates the note mode UI
+ */
 function UpdateNoteMode(){
     var noteModeButton = document.getElementById("noteMode");
     if(isNoteMode){
@@ -326,6 +377,10 @@ function UpdateNoteMode(){
     }
 }
 
+/**
+ * Pass in int to set game difficulty
+ * @param {*} diff Sets the game difficulty based on int
+ */
 function SetDifficulty(diff = 0){
     switch(diff){
         case EDifficulty.SuperEasy:
@@ -347,6 +402,10 @@ function SetDifficulty(diff = 0){
     NewGame();
 }
 
+/**
+ * Creates a new board based on difficulty
+ * @param {*} _seedAmount how many cells to fill with random numbers before trying to solve
+ */
 function NewGame(_seedAmount = 5){
     //find new game button and blur it
     var newGameButton = document.getElementById("btnNewGame");
@@ -361,17 +420,19 @@ function NewGame(_seedAmount = 5){
         Reset();
         var numsLeft = _seedAmount;
         while(numsLeft > 0){
+            //random pos and value
             var randX = Math.floor(Math.random() * 9);
             var randY = Math.floor(Math.random() * 9);
             var randNum = Math.floor(Math.random() * 9) + 1;
+            //try place
             if(board[randY][randX] == 0 && CheckPos(randX, randY, randNum)){
                 board[randY][randX] = randNum;
                 numsLeft -= 1;
             }
         }
-        //var copyBoard = JSON.parse(JSON.stringify(board));
+        //try solve
         if(Solve(0,0)){
-            //board = copyBoard;
+            //if solved, set trim board down based on difficulty
             var trimAmount = GetTrimAmount();
             TrimBoard(trimAmount, -1);
             LockFilledCells();
@@ -388,6 +449,10 @@ function NewGame(_seedAmount = 5){
     UpdateUI();
 }
 
+/**
+ * Gets how many cells to trim based on difficulty
+ * @returns {number} the amount of cells to trim based on difficulty
+ */
 function GetTrimAmount() {
     switch (difficulty) {
         case EDifficulty.SuperEasy:
@@ -412,6 +477,11 @@ function GetTrimAmount() {
     }
 }
 
+/**
+ * Trims board from solution to give playable game
+ * @param {*} toTrim how many cells to trim
+ * @param {*} range how many extra cells to trim (random)
+ */
 function TrimBoard(toTrim = 4, range = 0){
     //for each box in the board (3x3) set random cells to 0, until lockedPerBox cells have numbers
     for(var y = 0; y < 9; y += 3){
@@ -429,6 +499,9 @@ function TrimBoard(toTrim = 4, range = 0){
     }
 }
 
+/**
+ * Resets the board and game to default state
+ */
 function Reset(){
     RestartTimer();
     for(var y = 0; y < 9; y++){
@@ -442,6 +515,9 @@ function Reset(){
     UpdateUI();
 }
 
+/**
+ * Adds every cell to locked cells list
+ */
 function LockAllCells(){
     for(var y = 0; y < 9; y++){
         for(var x = 0; x < 9; x++){
@@ -452,6 +528,9 @@ function LockAllCells(){
     UpdateUI();
 }
 
+/**
+ * Adds only cels with values to locked cells list
+ */
 function LockFilledCells(){
     for(var y = 0; y < 9; y++){
         for(var x = 0; x < 9; x++){
@@ -464,13 +543,19 @@ function LockFilledCells(){
     UpdateUI();
 }
 
+/**
+ * Sets locked list to empty
+ */
 function UnlockAllCells(){
     lockedCells = [];
     SaveGame();
     UpdateUI();
 }
 
-function Clear(doCheck = true){
+/**
+ * Sets all cells that are not in locked cells list to 0
+ */
+function Clear(){
     //find clear button and blur it
     var clearButton = document.getElementById("btnClear");
     if (clearButton != null) clearButton.blur();
@@ -488,40 +573,40 @@ function Clear(doCheck = true){
     UpdateUI();
 }
 
+/**
+ * Uses backtracking to try solved the current board
+ * @param {*} x starting x pos
+ * @param {*} y starting y pos
+ * @returns true if solved, false if not
+ */
 function Solve(x = 0, y = 0){
     // find solve button and blur it
     var solveButton = document.getElementById("btnSolve");
     if (solveButton != null) solveButton.blur();
 
-    if(x == dim && y == dim - 1){
+    //end of board
+    if(x == 9 && y == 8){
         return true;
     }
 
-    if (x == dim){
+    //end of row
+    if (x == 9){
         x = 0;
         y += 1;
     }
 
+    //if cell is filled, skip
     if(board[y][x] != 0){
         return Solve(x + 1, y);
     }
 
-    // for(var num = 1; num <= 9; num++){
-    //     if(CheckPos(x, y, num)){
-    //         board[y][x] = num;
-
-    //         if(Solve(x + 1, y)){
-    //             return true;
-    //         }
-    //     }
-    //     board[y][x] = 0;
-    // }
-
+    //list of numbers to try and place in cell
     var numsToCheck = [1,2,3,4,5,6,7,8,9];
     //randomly choose a number to check, and remove it from the list
     while (numsToCheck.length > 0){
         var randNum = Math.floor(Math.random() * numsToCheck.length);
         var num = numsToCheck[randNum];
+        //check if number is valid in cell
         if(CheckPos(x, y, num)){
             board[y][x] = num;
 
@@ -529,6 +614,7 @@ function Solve(x = 0, y = 0){
                 return true;
             }
         }
+        //if not, undo and remove number from list
         board[y][x] = 0;
         numsToCheck.splice(randNum, 1);
     }
@@ -536,6 +622,10 @@ function Solve(x = 0, y = 0){
     return false;
 }
 
+/**
+ * Checks if the current board is solved
+ * @returns true if the board is solved, false if not
+ */
 function CheckSolved(){
     for(var y = 0; y < 9; y++){
         for(var x = 0; x < 9; x++){
@@ -545,8 +635,4 @@ function CheckSolved(){
         }
     }
     return true;
-}
-
-function Clamp(num, min, max){
-    return Math.min(Math.max(num, min), max);
 }

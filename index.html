@@ -25,6 +25,7 @@
 
 <body onload="LoadGame()">
 
+    <!-- Title bar -->
     <div class="jumbotron text-center">
         <h1>Sudoku </h1>
         <p>GD3S02 - WebDev1 <i class="fa-solid fa-chess-board"></i></p>
@@ -38,6 +39,7 @@
     <!-- Centered Div for Sudoku Board -->
     <div class="container-fluid">
         <table class="gameGrid">
+            <!-- colgroup to do border colours -->
             <colgroup class="vertSep"><col span="3"></colgroup>
             <colgroup class="vertSep"><col span="3"></colgroup>
             <colgroup class="vertSep"><col span="3"></colgroup>
@@ -187,6 +189,7 @@
     <div class="container-fluid center-block" id="gameButtons">
         <div class="btn-group">
             <button id="btnNewGame" class="btn btn-primary btn-md center-block" data-toggle="modal" data-target="#difficultyModal">New Game <i class="fa-solid fa-plus"></i></button>
+            <!-- Moodal for new game -->
             <div class="modal fade" id="difficultyModal" tabindex="-1" role="dialog" aria-labelledby="difficultyModal" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -215,6 +218,7 @@
                 </div>
             </div>
             <button id="btnClear" class="btn btn-danger btn-md center-block" data-toggle="modal" data-target="#clearModal">Clear <i class="fa-solid fa-ban"></i></button>
+            <!-- Modal for clear game -->
             <div class="modal fade" id="clearModal" tabindex="-1" role="dialog" aria-labelledby="clearModal" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -239,15 +243,6 @@
             <button id="btnSolve" class="btn btn-success btn-md center-block" OnClick="{Solve();UpdateBoard()}" >Solve <i class="fa-solid fa-check"></i></button>
         </div>
     </div>
-
-    <!-- Centered Buttons (Easy, Medium, Hard) -->
-    <!-- <div class="container-fluid" id="difficultyButtons">
-        <div class="btn-group">
-            <button id="btnEasy" class="btn btn-outline-success btn-md center-block" OnClick="{SetDifficulty(0)}" >Easy <i class="fa-solid fa-person"></i></i></button>
-            <button id="btnMedium" class="btn btn-outline-warning btn-md center-block white" OnClick="{SetDifficulty(1)}" >Medium <i class="fa-solid fa-person-walking"></i></i></button>
-            <button id="btnHard" class="btn btn-outline-danger btn-md center-block" OnClick="{SetDifficulty(2)}" >Hard <i class="fa-solid fa-person-running"></i></i></button>
-        </div>
-    </div> -->
 
     <!-- footer -->
     <footer class="text-center footer">
