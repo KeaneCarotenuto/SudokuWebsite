@@ -108,8 +108,7 @@ function LoadGame(){
     if(savedTime != null){
         totalTime = parseInt(savedTime);
     }
-
-    PlayTimer();
+    
     UpdateUI();
 }
 
@@ -177,8 +176,9 @@ function CheckBoard(input){
         if(isNaN(num)){
             num = 0;
         }
-        //clamp num to 0-9
-        num = Clamp(num, 0, 9);
+        //get last charater of num
+        var lastChar = num.toString().substring(num.toString().length - 1);
+        num = parseInt(lastChar);
 
         board[y][x] = num;
     }
@@ -305,6 +305,8 @@ function UpdateBoard(){
                 if (!CheckPos(x, y, boardVal)){
                     cell.classList.add("cellWrong");
                 }
+                //remove font size change
+                cell.style.fontSize = "";
             }
         }
     }
